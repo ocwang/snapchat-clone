@@ -38,6 +38,7 @@ class CameraViewController: UIViewController {
         return true
     }
     
+    // MARK: - Configurations
     func configureCameraInput(with position: AVCaptureDevicePosition = .back) {
         let cameraDevice = cameraWithPosition(position: position)
         
