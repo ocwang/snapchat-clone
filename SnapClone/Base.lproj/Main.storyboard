@@ -20,8 +20,33 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sVq-kc-psS">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wlU-Xp-bGd">
+                                <rect key="frame" x="164" y="587" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="recordButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jSN-CH-fVf"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.26274509800000001" green="0.70980392160000005" blue="0.50588235290000005" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="sVq-kc-psS" secondAttribute="trailing" id="CL0-Ls-rLn"/>
+                            <constraint firstItem="sVq-kc-psS" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Fli-xs-f3A"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="wlU-Xp-bGd" secondAttribute="bottom" constant="50" id="LT9-mk-QOP"/>
+                            <constraint firstItem="sVq-kc-psS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MSB-z4-NKA"/>
+                            <constraint firstItem="wlU-Xp-bGd" firstAttribute="centerX" secondItem="sVq-kc-psS" secondAttribute="centerX" id="f7H-jB-AVa"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="sVq-kc-psS" secondAttribute="bottom" id="swx-Qb-bvr"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="cameraView" destination="sVq-kc-psS" id="4qu-K9-Odd"/>
+                        <outlet property="recordButton" destination="wlU-Xp-bGd" id="BUi-MW-wZe"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
