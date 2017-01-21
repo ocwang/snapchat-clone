@@ -28,7 +28,6 @@ class CameraViewController: UIViewController {
         let layer = AVCaptureVideoPreviewLayer(session: self.captureSession)!
         layer.videoGravity = AVLayerVideoGravityResizeAspectFill
         layer.connection?.videoOrientation = AVCaptureVideoOrientation.portrait
-        
         return layer
     }()
     let photoOutput = AVCapturePhotoOutput()
@@ -176,6 +175,12 @@ extension CameraViewController {
         
         guard let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo) else { return }
         
+        if activeVideoInput.device.position == .front {
+            connection.isVideoMirrored = true
+        } else {
+            connection.isVideoMirrored = false
+        }
+
         if connection.isVideoOrientationSupported {
             connection.videoOrientation = activeVideoOrientation
         }
