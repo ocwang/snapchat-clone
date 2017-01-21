@@ -51,7 +51,14 @@ class SCContainerViewController: UIViewController {
     }
 
     func captureButtonLongPressed(_ gesture: UILongPressGestureRecognizer) {
-        print("long press")
+        if gesture.state == .began {
+            print("long press began")
+            cameraViewController.captureMovie()
+        } else if gesture.state == .ended {
+            // stop recording
+            print("long press ended")
+            cameraViewController.stopRecording()
+        }
     }
 }
 

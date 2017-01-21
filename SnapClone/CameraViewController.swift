@@ -32,6 +32,8 @@ class CameraViewController: UIViewController {
     let imageOutput = AVCapturePhotoOutput()
     let movieOutput = AVCaptureMovieFileOutput()
     
+    var playerLooper: AVPlayerLooper!
+    
     var currentVideoInputPosition = AVCaptureDevicePosition.back
     
     weak var delegate: CameraViewControllerDelegate?
@@ -76,7 +78,6 @@ extension CameraViewController {
 }
 
 // MARK: - AVCaptureSession
-
 extension CameraViewController {
     fileprivate func setupCaptureSession() {
         if let audioDevice = AVCaptureDevice.audioDevice() {
@@ -157,6 +158,41 @@ extension CameraViewController {
         
         imageOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
     }
+    
+    func captureMovie() {
+        
+        guard let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo) else { return }
+        
+        if connection.isVideoOrientationSupported {
+            connection.videoOrientation = currentVideoOrientation
+        }
+        
+        if connection.isVideoStabilizationSupported {
+            connection.preferredVideoStabilizationMode = .auto
+        }
+        
+        guard let outputURL = tempURL() else { return }
+        
+        movieOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
+    }
+    
+    func stopRecording() {
+        if movieOutput.isRecording == true {
+            movieOutput.stopRecording()
+        }
+    }
+    
+    func tempURL() -> URL? {
+        let directory = NSTemporaryDirectory() as NSString
+        
+        if directory != "" {
+            let path = directory.appendingPathComponent("penCam.mov")
+            return NSURL.fileURL(withPath: path)
+        }
+        
+        return nil
+    }
+    
 }
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
@@ -202,5 +238,34 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         //        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
 }
+
+extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
+    func capture(_ captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAt fileURL: URL!, fromConnections connections: [Any]!) {
+        //
+    }
+    
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        guard error == nil else { return }
+        
+        let queuePlayer = AVQueuePlayer()
+        
+        let looperView = UIView()
+        looperView.frame = view.bounds
+        view.addSubview(looperView)
+        
+        let playerLayer = AVPlayerLayer(player: queuePlayer)
+        playerLayer.frame = looperView.bounds
+        looperView.layer.addSublayer(playerLayer)
+        
+        let playerItem = AVPlayerItem(url: outputFileURL)
+        playerItem.asset.loadValuesAsynchronously(forKeys: [], completionHandler: {
+            DispatchQueue.main.async(execute: {
+                self.playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
+                queuePlayer.play()
+            })
+        })
+    }
+}
+
 
 
