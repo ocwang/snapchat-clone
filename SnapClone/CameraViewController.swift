@@ -31,9 +31,7 @@ class CameraViewController: UIViewController {
     }()
     let imageOutput = AVCapturePhotoOutput()
     let movieOutput = AVCaptureMovieFileOutput()
-    
-    var currentVideoInputPosition = AVCaptureDevicePosition.back
-    
+    var activeVideoInput: AVCaptureDeviceInput!
     weak var delegate: CameraViewControllerDelegate?
     
     // MARK: - View Lifecycles
@@ -83,7 +81,13 @@ extension CameraViewController {
             captureSession.sc_addInput(with: audioDevice)
         }
         if let cameraDevice = AVCaptureDevice.videoDevice() {
-            captureSession.sc_addInput(with: cameraDevice)
+            captureSession.sc_addInput(with: cameraDevice) { [unowned self] result in
+                switch result {
+                case .success(let deviceInput):
+                    self.activeVideoInput = deviceInput
+                case .error: break
+                }
+            }
         }
 
         captureSession.sessionPreset = AVCaptureSessionPresetHigh
@@ -109,24 +113,21 @@ extension CameraViewController {
     }
     
     func switchCamera() {
-        guard let inputs = captureSession.inputs as? [AVCaptureDeviceInput] else { return }
-        
-        let currentVideoInputs = inputs.filter { (input) -> Bool in
-            input.device.hasMediaType(AVMediaTypeVideo)
-        }
-        
-        guard let currentVideoInput = currentVideoInputs.first else { return }
+        // TODO: Considering using AVCaptureDeviceDiscoverySession to check for multiple cameras
         
         captureSession.beginConfiguration()
         
-        let newPosition: AVCaptureDevicePosition = currentVideoInput.device.position == .back ? .front : .back
+        let newPosition: AVCaptureDevicePosition = activeVideoInput.device.position == .back ? .front : .back
         // TODO: Make sure audio is setup when switching cameras
         //        setupAudioInput()
         if let cameraDevice = AVCaptureDevice.videoDevice(for: newPosition) {
-            captureSession.removeInput(currentVideoInput)
-            captureSession.sc_addInput(with: cameraDevice) { [unowned self] success in
-                if success {
-                    self.currentVideoInputPosition = newPosition
+            captureSession.removeInput(activeVideoInput)
+            
+            captureSession.sc_addInput(with: cameraDevice) { [unowned self] result in
+                switch result {
+                case .success(let deviceInput):
+                    self.activeVideoInput = deviceInput
+                case .error: break
                 }
             }
         }
@@ -134,7 +135,7 @@ extension CameraViewController {
         captureSession.commitConfiguration()
     }
 
-    var currentVideoOrientation: AVCaptureVideoOrientation {
+    var activeVideoOrientation: AVCaptureVideoOrientation {
         switch UIDevice.current.orientation {
         case .portrait:
             return .portrait
@@ -152,29 +153,56 @@ extension CameraViewController {
             else { return }
         
         if connection.isVideoOrientationSupported {
-            connection.videoOrientation = currentVideoOrientation
+            connection.videoOrientation = activeVideoOrientation
         }
         
-        imageOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
+        let settings = AVCapturePhotoSettings()
+//        settings.flashMode = .on
+        imageOutput.capturePhoto(with: settings, delegate: self)
     }
+    
+//    func savePhotoToLibrary(image: UIImage) {
+//        let photoLibrary = PHPhotoLibrary.sharedPhotoLibrary()
+//        photoLibrary.performChanges({
+//            PHAssetChangeRequest.creationRequestForAssetFromImage(image)
+//        }) { (success: Bool, error: NSError?) -> Void in
+//            if success {
+//                // Set thumbnail
+//                self.setPhotoThumbnail(image)
+//            } else {
+//                print("Error writing to photo library: \(error!.localizedDescription)")
+//            }
+//        }
+//    }
+    
+//    func saveMovieToLibrary(movieURL: NSURL) {
+//        let photoLibrary = PHPhotoLibrary.sharedPhotoLibrary()
+//        photoLibrary.performChanges({
+//            PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(movieURL)
+//        }) { (success: Bool, error: NSError?) -> Void in
+//            if success {
+//                // Set thumbnail
+//                self.setVideoThumbnailFromURL(movieURL)
+//            } else {
+//                print("Error writing to movie library: \(error!.localizedDescription)")
+//            }
+//        }
+//    }
 }
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-        guard let photoSampleBuffer = photoSampleBuffer
+        guard let buffer = photoSampleBuffer,
+            let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: buffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer),
+            let image = UIImage(data: photoData)
             else { return }
         
-        guard let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer,
-                                                                               previewPhotoSampleBuffer: previewPhotoSampleBuffer)
-            else { return }
+        let orientedImage = activeVideoInput.device.position == .back ? image :  UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .leftMirrored)
         
-        guard let image = UIImage(data: photoData)
-            else { return }
-        
-        let orientedImage = currentVideoInputPosition == .back ? image :  UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .leftMirrored)
         let imageView = UIImageView(image: orientedImage)
         imageView.frame = view.bounds
         view.addSubview(imageView)
+        
         
         
         /* Save to Firebase
