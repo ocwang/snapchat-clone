@@ -21,6 +21,8 @@
 		CA142A3B1E329C46006ACB92 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CA142A391E329C46006ACB92 /* LaunchScreen.storyboard */; };
 		CA142A461E329C46006ACB92 /* SnapCloneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA142A451E329C46006ACB92 /* SnapCloneTests.swift */; };
 		CA142A511E329C46006ACB92 /* SnapCloneUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA142A501E329C46006ACB92 /* SnapCloneUITests.swift */; };
+		CA9082CB1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9082CA1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift */; };
+		CA9082CD1E34107C00DE5F2E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9082CC1E34107C00DE5F2E /* Constants.swift */; };
 		E27223BC1E32C7E30071DC7D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +69,8 @@
 		CA142A4C1E329C46006ACB92 /* SnapCloneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnapCloneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA142A501E329C46006ACB92 /* SnapCloneUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapCloneUITests.swift; sourceTree = "<group>"; };
 		CA142A521E329C46006ACB92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CA9082CA1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SCPreviewCaptureOutputViewController.swift; path = "View Controllers/SCPreviewCaptureOutputViewController.swift"; sourceTree = "<group>"; };
+		CA9082CC1E34107C00DE5F2E /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FE46DB2E4A1850609D1E4353 /* Pods-SnapCloneUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SnapCloneUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SnapCloneUITests/Pods-SnapCloneUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -117,6 +121,7 @@
 			children = (
 				CA0E43B01E32D9BF00BA4163 /* SCContainerViewController.swift */,
 				CA142A321E329C46006ACB92 /* CameraViewController.swift */,
+				CA9082CA1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -160,6 +165,7 @@
 				CA0E43B21E32DA9600BA4163 /* View Controllers */,
 				CA142A341E329C46006ACB92 /* Main.storyboard */,
 				CA0E43B51E32DC0500BA4163 /* Extensions */,
+				CA9082CE1E34108200DE5F2E /* Supporting Files */,
 				CA142A371E329C46006ACB92 /* Assets.xcassets */,
 				CA142A391E329C46006ACB92 /* LaunchScreen.storyboard */,
 				E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */,
@@ -184,6 +190,14 @@
 				CA142A521E329C46006ACB92 /* Info.plist */,
 			);
 			path = SnapCloneUITests;
+			sourceTree = "<group>";
+		};
+		CA9082CE1E34108200DE5F2E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				CA9082CC1E34107C00DE5F2E /* Constants.swift */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		EDC29F64918498DF36501692 /* Frameworks */ = {
@@ -471,6 +485,8 @@
 				CA0E43B71E32E8CE00BA4163 /* UIButton+Autolayout.swift in Sources */,
 				CA142A311E329C46006ACB92 /* AppDelegate.swift in Sources */,
 				CA0E43B91E331E0600BA4163 /* SnapClone+AVFoundation.swift in Sources */,
+				CA9082CB1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift in Sources */,
+				CA9082CD1E34107C00DE5F2E /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

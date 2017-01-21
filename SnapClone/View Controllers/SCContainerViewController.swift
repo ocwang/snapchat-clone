@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import AVFoundation
 
 class SCContainerViewController: UIViewController {
 
     var cameraViewController: CameraViewController!
     
-    //    var playerLooper: AVPlayerLooper!
+    var playerLooper: AVPlayerLooper!
     
     let captureButton: UIView = {
         let customButtonView = UIView.newAutoLayoutView()
@@ -62,6 +63,10 @@ class SCContainerViewController: UIViewController {
             cameraViewController.stopVideoRecording()
         }
     }
+    
+    func presentPreviewCaptureViewController() {
+        
+    }
 }
 
 // MARK: - AutoLayout
@@ -81,12 +86,29 @@ extension SCContainerViewController {
     }
 }
 
+// MARK: - Navigation
+
+extension SCContainerViewController {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == k.Segue.toPreviewCaptureOutput {
+            if let image = sender as? UIImage {
+                
+            } else if let movieOutputFileURL = sender as? URL {
+                
+            }
+        }
+    }
+}
+
 extension SCContainerViewController: CameraViewControllerDelegate {
     func didDoubleTapCameraView(_ cameraView: UIView, in cameraViewController: CameraViewController) {
         cameraViewController.switchCamera()
     }
     
     func didCapturePhotoWithImage(_ image: UIImage) {
+        performSegue(withIdentifier: k.Segue.toPreviewCaptureOutput, sender: image)
+        
+        
         /* Save to Firebase
          
          guard let storageRef = storageRef else { return }
@@ -113,23 +135,26 @@ extension SCContainerViewController: CameraViewControllerDelegate {
     }
     
     func didFinishRecordingMovieToOutputFileAt(_ outputFileURL: URL!) {
-        //        let queuePlayer = AVQueuePlayer()
-        //
-        //        let looperView = UIView()
-        //        looperView.frame = view.bounds
-        //        view.addSubview(looperView)
-        //
-        //        let playerLayer = AVPlayerLayer(player: queuePlayer)
-        //        playerLayer.frame = looperView.bounds
-        //        looperView.layer.addSublayer(playerLayer)
-        //
-        //        let playerItem = AVPlayerItem(url: outputFileURL)
-        //        playerItem.asset.loadValuesAsynchronously(forKeys: [], completionHandler: {
-        //            DispatchQueue.main.async(execute: {
-        //                self.playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
-        //                queuePlayer.play()
-        //            })
-        //        })
+        performSegue(withIdentifier: k.Segue.toPreviewCaptureOutput, sender: outputFileURL)
+        
+        
+//        let queuePlayer = AVQueuePlayer()
+//        
+//        let looperView = UIView()
+//        looperView.frame = view.bounds
+//        view.addSubview(looperView)
+//        
+//        let playerLayer = AVPlayerLayer(player: queuePlayer)
+//        playerLayer.frame = looperView.bounds
+//        looperView.layer.addSublayer(playerLayer)
+//        
+//        let playerItem = AVPlayerItem(url: outputFileURL)
+//        playerItem.asset.loadValuesAsynchronously(forKeys: [], completionHandler: {
+//            DispatchQueue.main.async(execute: {
+//                self.playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
+//                queuePlayer.play()
+//            })
+//        })
     }
     
     //    func savePhotoToLibrary(image: UIImage) {
