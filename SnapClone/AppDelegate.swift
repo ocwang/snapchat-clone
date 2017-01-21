@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FIRApp.configure()
         
         if FIRAuth.auth()?.currentUser == nil {
-            FIRAuth.auth()?.createUser(withEmail: "jake@world.com", password: "testtest", completion: { (user, error) in
+            FIRAuth.auth()?.createUser(withEmail: "chase@world.com", password: "testtest", completion: { (user, error) in
                 print("User: \(user) \nError: \(error?.localizedDescription)")
                 
             })

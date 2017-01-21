@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Camera View Controller-->
+        <!--Container View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="CameraViewController" customModule="SnapClone" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="SCContainerViewController" customModule="SnapClone" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -20,33 +20,8 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sVq-kc-psS">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                            </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wlU-Xp-bGd">
-                                <rect key="frame" x="164" y="587" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="recordButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jSN-CH-fVf"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <color key="backgroundColor" red="0.26274509800000001" green="0.70980392160000005" blue="0.50588235290000005" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="sVq-kc-psS" secondAttribute="trailing" id="CL0-Ls-rLn"/>
-                            <constraint firstItem="sVq-kc-psS" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Fli-xs-f3A"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="wlU-Xp-bGd" secondAttribute="bottom" constant="50" id="LT9-mk-QOP"/>
-                            <constraint firstItem="sVq-kc-psS" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MSB-z4-NKA"/>
-                            <constraint firstItem="wlU-Xp-bGd" firstAttribute="centerX" secondItem="sVq-kc-psS" secondAttribute="centerX" id="f7H-jB-AVa"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="sVq-kc-psS" secondAttribute="bottom" id="swx-Qb-bvr"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="cameraView" destination="sVq-kc-psS" id="4qu-K9-Odd"/>
-                        <outlet property="recordButton" destination="wlU-Xp-bGd" id="BUi-MW-wZe"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
