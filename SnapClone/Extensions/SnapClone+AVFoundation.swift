@@ -23,15 +23,16 @@ extension AVCaptureSession {
 
     }
     
-    func sc_addInput(with device: AVCaptureDevice, completion: (() -> Void)? = nil) {
+    func sc_addInput(with device: AVCaptureDevice, completion: ((Bool) -> Void)? = nil) {
         do {
             let input = try AVCaptureDeviceInput(device: device)
             sc_addInput(input)
         } catch let error as NSError {
             assertionFailure("Error: \(error.localizedDescription)")
+            completion?(false)
         }
         
-        completion?()
+        completion?(true)
     }
 }
 

@@ -12,11 +12,11 @@ class SCContainerViewController: UIViewController {
 
     var cameraViewController: CameraViewController!
     
-    let button: UIButton = {
-        let button = UIButton.newAutoLayoutView()
-        button.backgroundColor = .green
+    let captureButton: UIView = {
+        let customButtonView = UIView.newAutoLayoutView()
+        customButtonView.backgroundColor = .green
         
-        return button
+        return customButtonView
     }()
     
     override var prefersStatusBarHidden: Bool {
@@ -27,26 +27,49 @@ class SCContainerViewController: UIViewController {
         super.viewDidLoad()
         
         cameraViewController = CameraViewController()
-        let cameraView = cameraViewController.view!
-        view.addSubview(cameraView)
-        view.addSubview(button)
- 
         cameraViewController.delegate = self
         
-        NSLayoutConstraint.activate([cameraView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                     button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                                     button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50)])
-    }
+        view.addSubview(cameraViewController.view!)
+        view.addSubview(captureButton)
+        setupConstraints()
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(captureButtonTapped))
+        captureButton.addGestureRecognizer(tap)
+        
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(captureButtonLongPressed))
+        captureButton.addGestureRecognizer(longPress)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         cameraViewController.startCaptureSession()
     }
+    
+    func captureButtonTapped(_ gesture: UITapGestureRecognizer) {
+        cameraViewController.capturePhoto()
+    }
 
+    func captureButtonLongPressed(_ gesture: UILongPressGestureRecognizer) {
+        print("long press")
+    }
+}
+
+// MARK: - AutoLayout
+
+extension SCContainerViewController {
+    fileprivate func setupConstraints() {
+        guard let cameraView = cameraViewController.view else { return }
+        
+        NSLayoutConstraint.activate([cameraView.topAnchor.constraint(equalTo: view.topAnchor),
+                                     cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                                     captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     captureButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+                                     captureButton.heightAnchor.constraint(equalToConstant: 60),
+                                     captureButton.widthAnchor.constraint(equalToConstant: 60)])
+    }
 }
 
 extension SCContainerViewController: CameraViewControllerDelegate {

@@ -32,19 +32,15 @@ class CameraViewController: UIViewController {
     let imageOutput = AVCapturePhotoOutput()
     let movieOutput = AVCaptureMovieFileOutput()
     
-    weak var delegate: CameraViewControllerDelegate?
+    var currentVideoInputPosition = AVCaptureDevicePosition.back
     
-    // MARK: - Subviews
-    let cameraView = UIView.newAutoLayoutView()
+    weak var delegate: CameraViewControllerDelegate?
     
     // MARK: - View Lifecycles
     override func loadView() {
         view =  UIView.newAutoLayoutView()
-        view.backgroundColor = .white
         
-        cameraView.layer.addSublayer(previewLayer)
-        view.addSubview(cameraView)
-        setupConstraints()
+        view.layer.addSublayer(previewLayer)
     }
 
     override func viewDidLoad() {
@@ -67,7 +63,7 @@ extension CameraViewController {
     fileprivate func setupTapGestureRecognizer() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTappedCameraView))
         tap.numberOfTapsRequired = 2
-        cameraView.addGestureRecognizer(tap)
+        view.addGestureRecognizer(tap)
     }
     
 }
@@ -75,7 +71,7 @@ extension CameraViewController {
 // MARK: - Helpers
 extension CameraViewController {
     func doubleTappedCameraView() {
-        delegate?.didDoubleTapCameraView(cameraView, in: self)
+        delegate?.didDoubleTapCameraView(view, in: self)
     }
 }
 
@@ -83,16 +79,15 @@ extension CameraViewController {
 
 extension CameraViewController {
     fileprivate func setupCaptureSession() {
-        
         if let audioDevice = AVCaptureDevice.audioDevice() {
             captureSession.sc_addInput(with: audioDevice)
         }
         if let cameraDevice = AVCaptureDevice.videoDevice() {
-            captureSession.sc_addInput(with: cameraDevice) { [unowned self] in
-                self.captureSession.sessionPreset = AVCaptureSessionPresetHigh
-            }
+            captureSession.sc_addInput(with: cameraDevice)
         }
 
+        captureSession.sessionPreset = AVCaptureSessionPresetHigh
+        
         captureSession.sc_addOutput(imageOutput)
         captureSession.sc_addOutput(movieOutput)
     }
@@ -125,25 +120,86 @@ extension CameraViewController {
         captureSession.beginConfiguration()
         
         let newPosition: AVCaptureDevicePosition = currentVideoInput.device.position == .back ? .front : .back
+        // TODO: Make sure audio is setup when switching cameras
         //        setupAudioInput()
         if let cameraDevice = AVCaptureDevice.videoDevice(for: newPosition) {
             captureSession.removeInput(currentVideoInput)
-            captureSession.sc_addInput(with: cameraDevice)
+            captureSession.sc_addInput(with: cameraDevice) { [unowned self] success in
+                if success {
+                    self.currentVideoInputPosition = newPosition
+                }
+            }
         }
-        
         
         captureSession.commitConfiguration()
     }
+
+    var currentVideoOrientation: AVCaptureVideoOrientation {
+        switch UIDevice.current.orientation {
+        case .portrait:
+            return .portrait
+        case .landscapeRight:
+            return .landscapeLeft
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .landscapeRight
+        }
+    }
+    
+    func capturePhoto() {
+        guard let connection = imageOutput.connection(withMediaType: AVMediaTypeVideo)
+            else { return }
+        
+        if connection.isVideoOrientationSupported {
+            connection.videoOrientation = currentVideoOrientation
+        }
+        
+        imageOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
+    }
 }
 
-// MARK: - AutoLayout
-
-extension CameraViewController {
-    fileprivate func setupConstraints() {
-        NSLayoutConstraint.activate([cameraView.topAnchor.constraint(equalTo: view.topAnchor),
-                                     cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                     cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                     cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor)])
+extension CameraViewController: AVCapturePhotoCaptureDelegate {
+    func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+        guard let photoSampleBuffer = photoSampleBuffer
+            else { return }
+        
+        guard let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer,
+                                                                               previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+            else { return }
+        
+        guard let image = UIImage(data: photoData)
+            else { return }
+        
+        let orientedImage = currentVideoInputPosition == .back ? image :  UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .leftMirrored)
+        let imageView = UIImageView(image: orientedImage)
+        imageView.frame = view.bounds
+        view.addSubview(imageView)
+        
+        
+        /* Save to Firebase
+        
+        guard let storageRef = storageRef else { return }
+        
+        // Create a reference to the file you want to upload
+        let riversRef = storageRef.child("images/rivers.jpg")
+        
+        // Upload the file to the path "images/rivers.jpg"
+        let uploadTask = riversRef.put(photoData, metadata: nil) { (metadata, error) in
+            guard let metadata = metadata else {
+                // Uh-oh, an error occurred!
+                return
+            }
+            // Metadata contains file metadata such as size, content-type, and download URL.
+            let downloadURL = metadata.downloadURL()
+            print(downloadURL?.absoluteString)
+        }
+ 
+        */
+        
+        
+        
+        //        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
 }
 
