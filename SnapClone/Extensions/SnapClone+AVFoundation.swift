@@ -9,6 +9,11 @@
 import Foundation
 import AVFoundation
 
+enum SCCaptureDeviceInputResult {
+    case success(AVCaptureDeviceInput)
+    case error(NSError)
+}
+
 extension AVCaptureSession {
     func sc_addOutput(_ output: AVCaptureOutput) {
         if canAddOutput(output) {
@@ -23,16 +28,17 @@ extension AVCaptureSession {
 
     }
     
-    func sc_addInput(with device: AVCaptureDevice, completion: ((Bool) -> Void)? = nil) {
+    func sc_addInput(with device: AVCaptureDevice, completion: ((SCCaptureDeviceInputResult) -> Void)? = nil) {
         do {
             let input = try AVCaptureDeviceInput(device: device)
             sc_addInput(input)
+            
+            completion?(.success(input))
         } catch let error as NSError {
             assertionFailure("Error: \(error.localizedDescription)")
-            completion?(false)
+            
+            completion?(.error(error))
         }
-        
-        completion?(true)
     }
 }
 

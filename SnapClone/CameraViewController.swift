@@ -12,6 +12,8 @@ import AVFoundation
 
 protocol CameraViewControllerDelegate: class {
     func didDoubleTapCameraView(_ cameraView: UIView, in cameraViewController: CameraViewController)
+    func didFinishRecordingMovieToOutputFileAt(_ outputFileURL: URL!)
+    func didCapturePhotoWithImage(_ image: UIImage)
 }
 
 class CameraViewController: UIViewController {
@@ -29,14 +31,22 @@ class CameraViewController: UIViewController {
         
         return layer
     }()
-    let imageOutput = AVCapturePhotoOutput()
+    let photoOutput = AVCapturePhotoOutput()
     let movieOutput = AVCaptureMovieFileOutput()
-    
-    var playerLooper: AVPlayerLooper!
-    
-    var currentVideoInputPosition = AVCaptureDevicePosition.back
-    
+    var activeVideoInput: AVCaptureDeviceInput!
     weak var delegate: CameraViewControllerDelegate?
+    
+    
+    var tempMovieOutputFileURL: URL? = {
+        let directory = NSTemporaryDirectory() as NSString
+        
+        if directory != "" {
+            let path = directory.appendingPathComponent("scmovie.mov")
+            return NSURL.fileURL(withPath: path)
+        }
+        
+        return nil
+    }()
     
     // MARK: - View Lifecycles
     override func loadView() {
@@ -67,7 +77,6 @@ extension CameraViewController {
         tap.numberOfTapsRequired = 2
         view.addGestureRecognizer(tap)
     }
-    
 }
 
 // MARK: - Helpers
@@ -84,12 +93,17 @@ extension CameraViewController {
             captureSession.sc_addInput(with: audioDevice)
         }
         if let cameraDevice = AVCaptureDevice.videoDevice() {
-            captureSession.sc_addInput(with: cameraDevice)
+            captureSession.sc_addInput(with: cameraDevice) { [unowned self] result in
+                switch result {
+                case .success(let deviceInput):
+                    self.activeVideoInput = deviceInput
+                case .error: break
+                }
+            }
         }
 
         captureSession.sessionPreset = AVCaptureSessionPresetHigh
-        
-        captureSession.sc_addOutput(imageOutput)
+        captureSession.sc_addOutput(photoOutput)
         captureSession.sc_addOutput(movieOutput)
     }
     
@@ -110,24 +124,21 @@ extension CameraViewController {
     }
     
     func switchCamera() {
-        guard let inputs = captureSession.inputs as? [AVCaptureDeviceInput] else { return }
-        
-        let currentVideoInputs = inputs.filter { (input) -> Bool in
-            input.device.hasMediaType(AVMediaTypeVideo)
-        }
-        
-        guard let currentVideoInput = currentVideoInputs.first else { return }
+        // TODO: Considering using AVCaptureDeviceDiscoverySession to check for multiple cameras
         
         captureSession.beginConfiguration()
         
-        let newPosition: AVCaptureDevicePosition = currentVideoInput.device.position == .back ? .front : .back
+        let newPosition: AVCaptureDevicePosition = activeVideoInput.device.position == .back ? .front : .back
         // TODO: Make sure audio is setup when switching cameras
         //        setupAudioInput()
         if let cameraDevice = AVCaptureDevice.videoDevice(for: newPosition) {
-            captureSession.removeInput(currentVideoInput)
-            captureSession.sc_addInput(with: cameraDevice) { [unowned self] success in
-                if success {
-                    self.currentVideoInputPosition = newPosition
+            captureSession.removeInput(activeVideoInput)
+            
+            captureSession.sc_addInput(with: cameraDevice) { [unowned self] result in
+                switch result {
+                case .success(let deviceInput):
+                    self.activeVideoInput = deviceInput
+                case .error: break
                 }
             }
         }
@@ -135,7 +146,7 @@ extension CameraViewController {
         captureSession.commitConfiguration()
     }
 
-    var currentVideoOrientation: AVCaptureVideoOrientation {
+    var activeVideoOrientation: AVCaptureVideoOrientation {
         switch UIDevice.current.orientation {
         case .portrait:
             return .portrait
@@ -149,93 +160,51 @@ extension CameraViewController {
     }
     
     func capturePhoto() {
-        guard let connection = imageOutput.connection(withMediaType: AVMediaTypeVideo)
+        guard let connection = photoOutput.connection(withMediaType: AVMediaTypeVideo)
             else { return }
         
         if connection.isVideoOrientationSupported {
-            connection.videoOrientation = currentVideoOrientation
+            connection.videoOrientation = activeVideoOrientation
         }
         
-        imageOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
+        let settings = AVCapturePhotoSettings()
+//        settings.flashMode = .on
+        photoOutput.capturePhoto(with: settings, delegate: self)
     }
     
-    func captureMovie() {
+    func startVideoRecording() {
         
         guard let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo) else { return }
         
         if connection.isVideoOrientationSupported {
-            connection.videoOrientation = currentVideoOrientation
+            connection.videoOrientation = activeVideoOrientation
         }
         
         if connection.isVideoStabilizationSupported {
             connection.preferredVideoStabilizationMode = .auto
         }
         
-        guard let outputURL = tempURL() else { return }
+        guard let outputURL = tempMovieOutputFileURL else { return }
         
         movieOutput.startRecording(toOutputFileURL: outputURL, recordingDelegate: self)
     }
     
-    func stopRecording() {
-        if movieOutput.isRecording == true {
+    func stopVideoRecording() {
+        if movieOutput.isRecording {
             movieOutput.stopRecording()
         }
     }
-    
-    func tempURL() -> URL? {
-        let directory = NSTemporaryDirectory() as NSString
-        
-        if directory != "" {
-            let path = directory.appendingPathComponent("penCam.mov")
-            return NSURL.fileURL(withPath: path)
-        }
-        
-        return nil
-    }
-    
 }
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-        guard let photoSampleBuffer = photoSampleBuffer
+        guard let buffer = photoSampleBuffer,
+            let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: buffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer),
+            let image = UIImage(data: photoData)
             else { return }
         
-        guard let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer,
-                                                                               previewPhotoSampleBuffer: previewPhotoSampleBuffer)
-            else { return }
-        
-        guard let image = UIImage(data: photoData)
-            else { return }
-        
-        let orientedImage = currentVideoInputPosition == .back ? image :  UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .leftMirrored)
-        let imageView = UIImageView(image: orientedImage)
-        imageView.frame = view.bounds
-        view.addSubview(imageView)
-        
-        
-        /* Save to Firebase
-        
-        guard let storageRef = storageRef else { return }
-        
-        // Create a reference to the file you want to upload
-        let riversRef = storageRef.child("images/rivers.jpg")
-        
-        // Upload the file to the path "images/rivers.jpg"
-        let uploadTask = riversRef.put(photoData, metadata: nil) { (metadata, error) in
-            guard let metadata = metadata else {
-                // Uh-oh, an error occurred!
-                return
-            }
-            // Metadata contains file metadata such as size, content-type, and download URL.
-            let downloadURL = metadata.downloadURL()
-            print(downloadURL?.absoluteString)
-        }
- 
-        */
-        
-        
-        
-        //        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        let orientedImage = activeVideoInput.device.position == .back ? image :  UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: .leftMirrored)
+        delegate?.didCapturePhotoWithImage(orientedImage)
     }
 }
 
@@ -247,23 +216,7 @@ extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
     func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
         guard error == nil else { return }
         
-        let queuePlayer = AVQueuePlayer()
-        
-        let looperView = UIView()
-        looperView.frame = view.bounds
-        view.addSubview(looperView)
-        
-        let playerLayer = AVPlayerLayer(player: queuePlayer)
-        playerLayer.frame = looperView.bounds
-        looperView.layer.addSublayer(playerLayer)
-        
-        let playerItem = AVPlayerItem(url: outputFileURL)
-        playerItem.asset.loadValuesAsynchronously(forKeys: [], completionHandler: {
-            DispatchQueue.main.async(execute: {
-                self.playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
-                queuePlayer.play()
-            })
-        })
+        delegate?.didFinishRecordingMovieToOutputFileAt(outputFileURL)
     }
 }
 
