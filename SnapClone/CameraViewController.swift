@@ -180,9 +180,10 @@ extension CameraViewController {
             connection.videoOrientation = activeVideoOrientation
         }
         
-        if connection.isVideoStabilizationSupported {
-            connection.preferredVideoStabilizationMode = .auto
-        }
+        // TODO: Video hops when stabilizing
+//        if connection.isVideoStabilizationSupported {
+//            connection.preferredVideoStabilizationMode = .auto
+//        }
         
         guard let outputURL = tempMovieOutputFileURL else { return }
         

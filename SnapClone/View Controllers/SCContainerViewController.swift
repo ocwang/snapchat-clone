@@ -7,13 +7,10 @@
 //
 
 import UIKit
-import AVFoundation
 
 class SCContainerViewController: UIViewController {
 
     var cameraViewController: CameraViewController!
-    
-    var playerLooper: AVPlayerLooper!
     
     let captureButton: UIView = {
         let customButtonView = UIView.newAutoLayoutView()
@@ -91,10 +88,13 @@ extension SCContainerViewController {
 extension SCContainerViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == k.Segue.toPreviewCaptureOutput {
+            let dvc = segue.destination as! UINavigationController
+            let topViewController = dvc.topViewController as! SCPreviewCaptureOutputViewController
+            
             if let image = sender as? UIImage {
-                
+                topViewController.viewModel = SCPreviewPhotoViewModel(image: image)
             } else if let movieOutputFileURL = sender as? URL {
-                
+                topViewController.viewModel = SCPreviewMovieViewModel(movieOutputFileURL: movieOutputFileURL)
             }
         }
     }
@@ -136,25 +136,6 @@ extension SCContainerViewController: CameraViewControllerDelegate {
     
     func didFinishRecordingMovieToOutputFileAt(_ outputFileURL: URL!) {
         performSegue(withIdentifier: k.Segue.toPreviewCaptureOutput, sender: outputFileURL)
-        
-        
-//        let queuePlayer = AVQueuePlayer()
-//        
-//        let looperView = UIView()
-//        looperView.frame = view.bounds
-//        view.addSubview(looperView)
-//        
-//        let playerLayer = AVPlayerLayer(player: queuePlayer)
-//        playerLayer.frame = looperView.bounds
-//        looperView.layer.addSublayer(playerLayer)
-//        
-//        let playerItem = AVPlayerItem(url: outputFileURL)
-//        playerItem.asset.loadValuesAsynchronously(forKeys: [], completionHandler: {
-//            DispatchQueue.main.async(execute: {
-//                self.playerLooper = AVPlayerLooper(player: queuePlayer, templateItem: playerItem)
-//                queuePlayer.play()
-//            })
-//        })
     }
     
     //    func savePhotoToLibrary(image: UIImage) {

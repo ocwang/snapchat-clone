@@ -10,4 +10,13 @@ import UIKit
 
 class SCPreviewCaptureOutputViewController: UIViewController {
     
+    // MARK: - Instance Vars
+    var viewModel: SCPreviewCaptureOutputConfigurator!
+    
+    // MARK: - View Lifecycles
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+        viewModel.setupPreviewCaptureOutputInView(view)
+    }
 }

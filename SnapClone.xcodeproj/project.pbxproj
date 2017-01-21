@@ -24,6 +24,7 @@
 		CA9082CB1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9082CA1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift */; };
 		CA9082CD1E34107C00DE5F2E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9082CC1E34107C00DE5F2E /* Constants.swift */; };
 		E27223BC1E32C7E30071DC7D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */; };
+		E27223BF1E3414D40071DC7D /* SCPreviewCaptureOutputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27223BE1E3414D40071DC7D /* SCPreviewCaptureOutputViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		CA9082CA1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SCPreviewCaptureOutputViewController.swift; path = "View Controllers/SCPreviewCaptureOutputViewController.swift"; sourceTree = "<group>"; };
 		CA9082CC1E34107C00DE5F2E /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E27223BE1E3414D40071DC7D /* SCPreviewCaptureOutputViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SCPreviewCaptureOutputViewModel.swift; path = "View Models/SCPreviewCaptureOutputViewModel.swift"; sourceTree = "<group>"; };
 		FE46DB2E4A1850609D1E4353 /* Pods-SnapCloneUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SnapCloneUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-SnapCloneUITests/Pods-SnapCloneUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -163,10 +165,11 @@
 			children = (
 				CA142A301E329C46006ACB92 /* AppDelegate.swift */,
 				CA0E43B21E32DA9600BA4163 /* View Controllers */,
-				CA142A341E329C46006ACB92 /* Main.storyboard */,
+				E27223BD1E3414B60071DC7D /* View Models */,
 				CA0E43B51E32DC0500BA4163 /* Extensions */,
 				CA9082CE1E34108200DE5F2E /* Supporting Files */,
 				CA142A371E329C46006ACB92 /* Assets.xcassets */,
+				CA142A341E329C46006ACB92 /* Main.storyboard */,
 				CA142A391E329C46006ACB92 /* LaunchScreen.storyboard */,
 				E27223BB1E32C7E30071DC7D /* GoogleService-Info.plist */,
 				CA142A3C1E329C46006ACB92 /* Info.plist */,
@@ -198,6 +201,14 @@
 				CA9082CC1E34107C00DE5F2E /* Constants.swift */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E27223BD1E3414B60071DC7D /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				E27223BE1E3414D40071DC7D /* SCPreviewCaptureOutputViewModel.swift */,
+			);
+			name = "View Models";
 			sourceTree = "<group>";
 		};
 		EDC29F64918498DF36501692 /* Frameworks */ = {
@@ -286,7 +297,7 @@
 				TargetAttributes = {
 					CA142A2C1E329C45006ACB92 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = QXSA84SJDA;
+						DevelopmentTeam = MPF357W934;
 						ProvisioningStyle = Automatic;
 					};
 					CA142A401E329C46006ACB92 = {
@@ -484,6 +495,7 @@
 				CA142A331E329C46006ACB92 /* CameraViewController.swift in Sources */,
 				CA0E43B71E32E8CE00BA4163 /* UIButton+Autolayout.swift in Sources */,
 				CA142A311E329C46006ACB92 /* AppDelegate.swift in Sources */,
+				E27223BF1E3414D40071DC7D /* SCPreviewCaptureOutputViewModel.swift in Sources */,
 				CA0E43B91E331E0600BA4163 /* SnapClone+AVFoundation.swift in Sources */,
 				CA9082CB1E34087A00DE5F2E /* SCPreviewCaptureOutputViewController.swift in Sources */,
 				CA9082CD1E34107C00DE5F2E /* Constants.swift in Sources */,
@@ -639,7 +651,7 @@
 			baseConfigurationReference = 1EEBDBE11A5E1A2138A530C0 /* Pods-SnapClone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QXSA84SJDA;
+				DEVELOPMENT_TEAM = MPF357W934;
 				INFOPLIST_FILE = SnapClone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -654,7 +666,7 @@
 			baseConfigurationReference = 54BEF806E1EE1CB5AE0BBC3F /* Pods-SnapClone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QXSA84SJDA;
+				DEVELOPMENT_TEAM = MPF357W934;
 				INFOPLIST_FILE = SnapClone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
