@@ -42,10 +42,11 @@ extension AVCaptureDevice {
                                              position: position)
     }
     
-    /// Returns the default audio capture device, otherwise nil.
-    ///
-    /// - Returns: default audio capture device, otherwise nil
     public class func audioDevice() -> AVCaptureDevice? {
+        // TODO: Verify whether front/back mics are exposed with this API
+//        return AVCaptureDevice.defaultDevice(withDeviceType: .builtInMicrophone,
+//                                             mediaType: AVMediaTypeAudio,
+//                                             position: .front)
         return AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
     }
 }

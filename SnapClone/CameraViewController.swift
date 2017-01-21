@@ -10,6 +10,10 @@ import UIKit
 import FirebaseAuth
 import AVFoundation
 
+protocol CameraViewControllerDelegate: class {
+    func didDoubleTapCameraView(_ cameraView: UIView, in cameraViewController: CameraViewController)
+}
+
 class CameraViewController: UIViewController {
     
     lazy var videoQueue: DispatchQueue = {
@@ -28,6 +32,8 @@ class CameraViewController: UIViewController {
     let imageOutput = AVCapturePhotoOutput()
     let movieOutput = AVCaptureMovieFileOutput()
     
+    weak var delegate: CameraViewControllerDelegate?
+    
     // MARK: - Subviews
     let cameraView = UIView.newAutoLayoutView()
     
@@ -43,7 +49,7 @@ class CameraViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        setupTapGestureRecognizer()
         setupCaptureSession()
     }
     
@@ -56,6 +62,23 @@ class CameraViewController: UIViewController {
     }
 }
 
+// MARK: - Setups
+extension CameraViewController {
+    fileprivate func setupTapGestureRecognizer() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTappedCameraView))
+        tap.numberOfTapsRequired = 2
+        cameraView.addGestureRecognizer(tap)
+    }
+    
+}
+
+// MARK: - Helpers
+extension CameraViewController {
+    func doubleTappedCameraView() {
+        delegate?.didDoubleTapCameraView(cameraView, in: self)
+    }
+}
+
 // MARK: - AVCaptureSession
 
 extension CameraViewController {
@@ -64,7 +87,7 @@ extension CameraViewController {
         if let audioDevice = AVCaptureDevice.audioDevice() {
             captureSession.sc_addInput(with: audioDevice)
         }
-        if let cameraDevice = AVCaptureDevice.videoDevice(for: .back) {
+        if let cameraDevice = AVCaptureDevice.videoDevice() {
             captureSession.sc_addInput(with: cameraDevice) { [unowned self] in
                 self.captureSession.sessionPreset = AVCaptureSessionPresetHigh
             }
@@ -88,6 +111,28 @@ extension CameraViewController {
         videoQueue.async {
             self.captureSession.stopRunning()
         }
+    }
+    
+    func switchCamera() {
+        guard let inputs = captureSession.inputs as? [AVCaptureDeviceInput] else { return }
+        
+        let currentVideoInputs = inputs.filter { (input) -> Bool in
+            input.device.hasMediaType(AVMediaTypeVideo)
+        }
+        
+        guard let currentVideoInput = currentVideoInputs.first else { return }
+        
+        captureSession.beginConfiguration()
+        
+        let newPosition: AVCaptureDevicePosition = currentVideoInput.device.position == .back ? .front : .back
+        //        setupAudioInput()
+        if let cameraDevice = AVCaptureDevice.videoDevice(for: newPosition) {
+            captureSession.removeInput(currentVideoInput)
+            captureSession.sc_addInput(with: cameraDevice)
+        }
+        
+        
+        captureSession.commitConfiguration()
     }
 }
 

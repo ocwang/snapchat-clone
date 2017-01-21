@@ -31,6 +31,8 @@ class SCContainerViewController: UIViewController {
         view.addSubview(cameraView)
         view.addSubview(button)
  
+        cameraViewController.delegate = self
+        
         NSLayoutConstraint.activate([cameraView.topAnchor.constraint(equalTo: view.topAnchor),
                                      cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                                      cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -44,6 +46,11 @@ class SCContainerViewController: UIViewController {
         
         cameraViewController.startCaptureSession()
     }
-    
-    
+
+}
+
+extension SCContainerViewController: CameraViewControllerDelegate {
+    func didDoubleTapCameraView(_ cameraView: UIView, in cameraViewController: CameraViewController) {
+        cameraViewController.switchCamera()
+    }
 }
