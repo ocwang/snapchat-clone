@@ -52,10 +52,23 @@
                                     <action selector="closeButtonTapped:" destination="LeL-S7-18X" eventType="touchUpInside" id="Hmo-dr-COL"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hiM-j5-mEg">
+                                <rect key="frame" x="0.0" y="607" width="55" height="55"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="55" id="VKB-gJ-I1U"/>
+                                    <constraint firstAttribute="width" constant="55" id="veZ-ut-NyI"/>
+                                </constraints>
+                                <state key="normal" image="ic_save_white"/>
+                                <connections>
+                                    <action selector="saveButtonTapped:" destination="LeL-S7-18X" eventType="touchUpInside" id="le6-NA-ApJ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="ayE-re-TF0" firstAttribute="leading" secondItem="zE2-y9-fbB" secondAttribute="leading" id="13j-AU-056"/>
+                            <constraint firstItem="l21-h7-DRt" firstAttribute="top" secondItem="hiM-j5-mEg" secondAttribute="bottom" constant="5" id="bRn-0t-wUj"/>
+                            <constraint firstItem="hiM-j5-mEg" firstAttribute="leading" secondItem="zE2-y9-fbB" secondAttribute="leading" id="lyj-h2-hu6"/>
                             <constraint firstItem="ayE-re-TF0" firstAttribute="top" secondItem="kBC-li-hZo" secondAttribute="bottom" constant="5" id="wAV-Jo-0ma"/>
                         </constraints>
                     </view>
@@ -91,5 +104,6 @@
     </scenes>
     <resources>
         <image name="ic_close_white" width="25" height="25"/>
+        <image name="ic_save_white" width="25" height="25"/>
     </resources>
 </document>

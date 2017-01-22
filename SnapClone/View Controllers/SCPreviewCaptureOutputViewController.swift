@@ -43,4 +43,8 @@ class SCPreviewCaptureOutputViewController: UIViewController {
     @IBAction func closeButtonTapped(_ sender: UIButton) {
         self.navigationController?.dismiss(animated: false)
     }
+    
+    @IBAction func saveButtonTapped(_ sender: UIButton) {
+        // TODO: Implement
+    }
 }
