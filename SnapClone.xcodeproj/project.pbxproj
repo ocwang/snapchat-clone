@@ -297,7 +297,7 @@
 				TargetAttributes = {
 					CA142A2C1E329C45006ACB92 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = QXSA84SJDA;
+						DevelopmentTeam = MPF357W934;
 						ProvisioningStyle = Automatic;
 					};
 					CA142A401E329C46006ACB92 = {
@@ -651,7 +651,7 @@
 			baseConfigurationReference = 1EEBDBE11A5E1A2138A530C0 /* Pods-SnapClone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QXSA84SJDA;
+				DEVELOPMENT_TEAM = MPF357W934;
 				INFOPLIST_FILE = SnapClone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -666,7 +666,7 @@
 			baseConfigurationReference = 54BEF806E1EE1CB5AE0BBC3F /* Pods-SnapClone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = QXSA84SJDA;
+				DEVELOPMENT_TEAM = MPF357W934;
 				INFOPLIST_FILE = SnapClone/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -46,5 +46,8 @@ class SCPreviewCaptureOutputViewController: UIViewController {
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         // TODO: Implement
+        viewModel.saveCaptureOutput()
+        
+        
     }
 }

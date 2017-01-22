@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import AVFoundation
+import Photos
 
 protocol SCPreviewCaptureOutputConfigurator {
     func setupPreviewCaptureOutputInView(_ view: UIView)
+    func saveCaptureOutput()
 }
 
-class SCPreviewPhotoViewModel: SCPreviewCaptureOutputConfigurator {
+class SCPreviewPhotoViewModel: NSObject, SCPreviewCaptureOutputConfigurator {
     let image: UIImage
     
     init(image: UIImage) {
@@ -25,11 +28,28 @@ class SCPreviewPhotoViewModel: SCPreviewCaptureOutputConfigurator {
         
         view.insertSubview(imageView, at: 0)
     }
+    
+    func saveCaptureOutput() {
+        UIImageWriteToSavedPhotosAlbum(image,
+                                       self,
+                                       #selector(image(_:didFinishSavingWithError:contextInfo:)),
+                                       nil)
+
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
+        guard error == nil else {
+            print(error!.localizedDescription)
+            return
+        }
+    
+        print("Success")
+        // Animates to tell you saved to photos
+        // Can no longer tap button
+    }
 }
 
-import AVFoundation
-
-class SCPreviewMovieViewModel: SCPreviewCaptureOutputConfigurator {
+class SCPreviewMovieViewModel: NSObject, SCPreviewCaptureOutputConfigurator {
     let movieOutputFileURL: URL
     var playerLooper: AVPlayerLooper!
     
@@ -54,5 +74,19 @@ class SCPreviewMovieViewModel: SCPreviewCaptureOutputConfigurator {
                 queuePlayer.play()
             })
         })
+    }
+    
+    func saveCaptureOutput() {
+        PHPhotoLibrary.shared().performChanges({ 
+            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: self.movieOutputFileURL)
+        }) { (success: Bool, error: Error?) in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+            print("Success: \(success)")
+            // Animates to tell you saved to photos
+            // Can no longer tap button
+        }
     }
 }
