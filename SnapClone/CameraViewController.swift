@@ -37,14 +37,11 @@ class CameraViewController: UIViewController {
     
     
     var tempMovieOutputFileURL: URL? = {
-        let directory = NSTemporaryDirectory() as NSString
+        let tempDir = NSTemporaryDirectory()
+        var url = URL(fileURLWithPath: tempDir)
+        url.appendPathComponent("sc_movie.mov")
         
-        if directory != "" {
-            let path = directory.appendingPathComponent("scmovie.mov")
-            return NSURL.fileURL(withPath: path)
-        }
-        
-        return nil
+        return url
     }()
     
     // MARK: - View Lifecycles
@@ -172,20 +169,15 @@ extension CameraViewController {
     }
     
     func startVideoRecording() {
-        
         guard let connection = movieOutput.connection(withMediaType: AVMediaTypeVideo) else { return }
         
-        if activeVideoInput.device.position == .front {
-            connection.isVideoMirrored = true
-        } else {
-            connection.isVideoMirrored = false
-        }
+        connection.isVideoMirrored = activeVideoInput.device.position == .front ? true : false
 
         if connection.isVideoOrientationSupported {
             connection.videoOrientation = activeVideoOrientation
         }
         
-        // TODO: Video hops when stabilizing
+        // TODO: Enabling video stabilization introduces latency into the video capture pipeline
 //        if connection.isVideoStabilizationSupported {
 //            connection.preferredVideoStabilizationMode = .auto
 //        }

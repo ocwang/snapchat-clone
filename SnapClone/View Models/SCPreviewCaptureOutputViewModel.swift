@@ -22,7 +22,8 @@ class SCPreviewPhotoViewModel: SCPreviewCaptureOutputConfigurator {
     func setupPreviewCaptureOutputInView(_ view: UIView) {
         let imageView = UIImageView(image: image)
         imageView.frame = view.bounds
-        view.addSubview(imageView)
+        
+        view.insertSubview(imageView, at: 0)
     }
 }
 
@@ -37,13 +38,11 @@ class SCPreviewMovieViewModel: SCPreviewCaptureOutputConfigurator {
     }
     
     func setupPreviewCaptureOutputInView(_ view: UIView) {
-        
-        let queuePlayer = AVQueuePlayer()
-        
         let looperView = UIView()
         looperView.frame = view.bounds
-        view.addSubview(looperView)
+        view.insertSubview(looperView, at: 0)
         
+        let queuePlayer = AVQueuePlayer()
         let playerLayer = AVPlayerLayer(player: queuePlayer)
         playerLayer.frame = looperView.bounds
         looperView.layer.addSublayer(playerLayer)
