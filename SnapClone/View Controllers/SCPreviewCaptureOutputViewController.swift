@@ -45,9 +45,11 @@ class SCPreviewCaptureOutputViewController: UIViewController {
     }
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
-        // TODO: Implement
-        viewModel.saveCaptureOutput()
-        
-        
+        viewModel.saveCaptureOutput { (success) in
+            guard success else { return }
+            
+            print("Animate button")
+        }
+
     }
 }

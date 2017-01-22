@@ -12,7 +12,7 @@ import Photos
 
 protocol SCPreviewCaptureOutputConfigurator {
     func setupPreviewCaptureOutputInView(_ view: UIView)
-    func saveCaptureOutput()
+    func saveCaptureOutput(_ completionHandler: @escaping (Bool) -> Swift.Void)
 }
 
 class SCPreviewPhotoViewModel: NSObject, SCPreviewCaptureOutputConfigurator {
@@ -29,23 +29,16 @@ class SCPreviewPhotoViewModel: NSObject, SCPreviewCaptureOutputConfigurator {
         view.insertSubview(imageView, at: 0)
     }
     
-    func saveCaptureOutput() {
-        UIImageWriteToSavedPhotosAlbum(image,
-                                       self,
-                                       #selector(image(_:didFinishSavingWithError:contextInfo:)),
-                                       nil)
-
-    }
-    
-    @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
-        guard error == nil else {
-            print(error!.localizedDescription)
-            return
+    func saveCaptureOutput(_ completionHandler: @escaping (Bool) -> Void) {
+        PHPhotoLibrary.shared().performChanges({ 
+            PHAssetCreationRequest.creationRequestForAsset(from: self.image)
+        }) { (success: Bool, error: Error?) in
+            if let error = error {
+                assertionFailure(error.localizedDescription)
+            }
+            completionHandler(success)
         }
-    
-        print("Success")
-        // Animates to tell you saved to photos
-        // Can no longer tap button
+        
     }
 }
 
@@ -76,17 +69,15 @@ class SCPreviewMovieViewModel: NSObject, SCPreviewCaptureOutputConfigurator {
         })
     }
     
-    func saveCaptureOutput() {
-        PHPhotoLibrary.shared().performChanges({ 
+    func saveCaptureOutput(_ completionHandler: @escaping (Bool) -> Swift.Void) {
+        PHPhotoLibrary.shared().performChanges({
             PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: self.movieOutputFileURL)
         }) { (success: Bool, error: Error?) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
+            if let error = error {
+                assertionFailure(error.localizedDescription)
             }
-            print("Success: \(success)")
-            // Animates to tell you saved to photos
-            // Can no longer tap button
+            
+            completionHandler(success)
         }
     }
 }
