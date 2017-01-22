@@ -15,12 +15,14 @@ class SCPreviewCaptureOutputViewController: UIViewController {
     
     // MARK: - Subviews
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var saveButton: UIButton!
     
     // MARK: - View Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
-        
+        saveButton.isEnabled = true
+        saveButton.isHidden = false
         viewModel.setupPreviewCaptureOutputInView(view)
     }
     
@@ -45,10 +47,16 @@ class SCPreviewCaptureOutputViewController: UIViewController {
     }
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
+        saveButton.isEnabled = false
+        
         viewModel.saveCaptureOutput { (success) in
-            guard success else { return }
+            self.saveButton.isEnabled = !success
             
-            print("Animate button")
+            // TODO: Animate to tell user it was successful
+            DispatchQueue.main.async {
+                self.saveButton.isHidden = success
+                print("works")
+            }
         }
 
     }
